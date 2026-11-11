@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ProofPay — AI-verified milestone payments</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ag-grid-community@32/dist/styles/ag-grid.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ag-grid-community@32/dist/styles/ag-theme-quartz.css">
+<script src="https://cdn.jsdelivr.net/npm/ag-grid-community@32/dist/ag-grid-community.min.js"></script>
+<style>
+  :root{
+    --navy:#003087; --blue:#0070ba; --blue-dark:#005ea6; --bg:#f5f7fa;
+    --card:#ffffff; --ink:#1a2b4a; --muted:#5b6b82; --line:#dbe4ee;
+    --green:#0a7d4f; --green-bg:#e6f6ee; --amber:#9a6a00; --amber-bg:#fdf3d7;
+    --red:#b3261e; --red-bg:#fdecea; --radius:14px;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--ink)}
+  .site-header{background:linear-gradient(120deg,var(--navy),var(--blue));color:#fff;padding:22px 16px}
+  .header-inner{max-width:980px;margin:0 auto;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+  .logo{width:46px;height:46px;border-radius:12px;background:#fff;color:var(--navy);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:24px;box-shadow:0 2px 8px rgba(0,0,0,.25)}
+  .brand-name{font-size:26px;font-weight:800;letter-spacing:.2px}
+  .brand-tag{font-size:14px;opacity:.92}
+  .sandbox-badge{margin-left:auto;background:#ffc439;color:#111;font-weight:700;font-size:12px;padding:6px 12px;border-radius:999px;text-transform:uppercase;letter-spacing:.6px}
+  .wrap{max-width:980px;margin:0 auto;padding:20px 16px 48px}
+  .intro{color:var(--muted);font-size:15px;line-height:1.55;margin:4px 0 18px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px;margin-bottom:18px;box-shadow:0 1px 3px rgba(0,32,80,.05)}
+  .card h2{margin:0 0 6px;font-size:18px;display:flex;align-items:center;gap:10px}
+  .step-num{width:28px;height:28px;border-radius:50%;background:var(--blue);color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;flex:none}
+  .card p.hint{color:var(--muted);font-size:13.5px;margin:0 0 14px;line-height:1.5}
+  label{display:block;font-size:13px;font-weight:600;margin-bottom:6px;color:var(--ink)}
+  input[type=text],input[type=email],input[type=number],input[type=url],textarea{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:9px;font-size:14px;font-family:inherit;background:#fbfcfe;color:var(--ink)}
+  textarea{resize:vertical;line-height:1.5}
+  input:focus,textarea:focus{outline:2px solid var(--blue);border-color:var(--blue);background:#fff}
+  .grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+  .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  @media(max-width:720px){.grid-3,.grid-2{grid-template-columns:1fr}}
+  .btn{display:inline-block;border:none;cursor:pointer;border-radius:999px;padding:11px 22px;font-size:14.5px;font-weight:700;background:var(--blue);color:#fff;transition:background .15s}
+  .btn:hover{background:var(--blue-dark)}
+  .btn:disabled{background:#a9bfd1;cursor:not-allowed}
+  .btn.ghost{background:#eef4fa;color:var(--navy);border:1px solid var(--line)}
+  .btn.ghost:hover{background:#e0ecf7}
+  .btn.green{background:var(--green)}
+  .btn.green:hover{background:#08653f}
+  .btn-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+  .notice{border-radius:10px;padding:13px 15px;font-size:13.5px;line-height:1.55;margin-top:12px}
+  .notice.warn{background:var(--amber-bg);color:var(--amber);border:1px solid #ecd28a}
+  .notice.ok{background:var(--green-bg);color:var(--green);border:1px solid #a9dcc2}
+  .notice.err{background:var(--red-bg);color:var(--red);border:1px solid #f0b8b3}
+  .notice.info{background:#e8f1fa;color:var(--navy);border:1px solid #bcd6ef}
+  .milestone-card{border:1.5px solid var(--line);border-radius:12px;padding:15px 16px;margin-top:12px;cursor:pointer;transition:border-color .15s, box-shadow .15s}
+  .milestone-card:hover{border-color:var(--blue)}
+  .milestone-card.active{border-color:var(--blue);box-shadow:0 0 0 3px rgba(0,112,186,.15)}
+  .ms-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  .ms-title{font-weight:700;font-size:15.5px}
+  .pill{font-size:11px;font-weight:800;letter-spacing:.5px;padding:4px 10px;border-radius:999px;text-transform:uppercase}
+  .pill.draft{background:#e8edf3;color:var(--muted)}
+  .pill.funded{background:#e8f1fa;color:var(--navy)}
+  .pill.released{background:var(--green-bg);color:var(--green)}
+  .ms-amount-row{display:flex;align-items:center;gap:8px;margin:10px 0 4px}
+  .ms-amount-row input{width:120px}
+  .criteria-list{margin:8px 0 4px;padding-left:20px}
+  .criteria-list li{font-size:13.5px;line-height:1.5;margin-bottom:3px}
+  .crit-badge{font-size:10.5px;font-weight:700;background:var(--amber-bg);color:var(--amber);border-radius:6px;padding:1px 6px;margin-left:6px;text-transform:uppercase;letter-spacing:.4px}
+  .ms-ids{font-size:12.5px;color:var(--muted);margin-top:8px;line-height:1.6;word-break:break-all}
+  .total-row{margin-top:14px;font-size:15px;font-weight:700}
+  .score-wrap{display:flex;align-items:center;gap:14px;margin:12px 0}
+  .score-num{font-size:34px;font-weight:800}
+  .bar{flex:1;height:14px;background:#e8edf3;border-radius:999px;overflow:hidden}
+  .bar>div{height:100%;border-radius:999px;transition:width .4s}
+  table.verify{width:100%;border-collapse:collapse;font-size:13.5px;margin-top:10px}
+  table.verify th,table.verify td{border-bottom:1px solid var(--line);padding:9px 8px;text-align:left;vertical-align:top}
+  table.verify th{font-size:12px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted)}
+  .verdict-pass{color:var(--green);font-weight:800}
+  .verdict-fail{color:var(--red);font-weight:800}
+  .evidence{color:var(--muted);font-style:italic;font-size:12.5px}
+  .banner{border-radius:10px;padding:14px 16px;font-weight:800;font-size:15.5px;margin-top:8px}
+  .banner.release{background:var(--green-bg);color:var(--green);border:1px solid #a9dcc2}
+  .banner.revise{background:var(--amber-bg);color:var(--amber);border:1px solid #ecd28a}
+  ul.missing{margin:8px 0 0;padding-left:20px;font-size:13.5px;line-height:1.6}
+  #ledger-grid{height:280px;width:100%}
+  table.ledger{width:100%;border-collapse:collapse;font-size:13px}
+  table.ledger th,table.ledger td{border-bottom:1px solid var(--line);padding:8px;text-align:left}
+  .muted{color:var(--muted)}
+  .small{font-size:12.5px}
+  a.linklike{color:var(--blue);cursor:pointer;text-decoration:underline;font-size:13.5px}
+  footer{color:var(--muted);font-size:12.5px;text-align:center;line-height:1.6;padding:0 16px 30px}
+  #paypal-buttons{max-width:420px;margin-top:12px}
+  .hidden{display:none!important}
+</style>
+<link rel="stylesheet" href="fx.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="header-inner">
+    <div class="logo">P</div>
+    <div>
+      <div class="brand-name">ProofPay</div>
+      <div class="brand-tag">AI-verified milestone payments for freelancers</div>
+    </div>
+    <span class="sandbox-badge">PayPal Sandbox</span>
+    <button class="fx-mute" id="fx-mute" type="button" title="Toggle UI sounds">🔊 Sound on</button>
+  </div>
+</header>
+
+<div class="wrap">
+  <p class="intro">
+    Clients fear paying upfront for work that never matches the brief. Freelancers fear delivering
+    work and never getting paid. ProofPay fixes both: the client funds each milestone with PayPal,
+    an AI verifies the deliverable against the brief's acceptance criteria, and only a passing
+    verdict releases the money — as a real PayPal payout.
+  </p>
+
+  <!-- FX: animated money flow -->
+  <div class="fx-hero" id="fx-hero" aria-hidden="true">
+    <div class="fx-flow">
+      <div class="fx-node" id="fx-node-client">
+        <span class="fx-node-ico">👤</span>
+        <span class="fx-node-label">Client</span>
+        <span class="fx-node-sub">funds with PayPal</span>
+      </div>
+      <div class="fx-link"><span class="fx-dot"></span><span class="fx-dot d2"></span></div>
+      <div class="fx-node" id="fx-node-vault">
+        <span class="fx-node-ico">🔒</span>
+        <span class="fx-node-label">ProofPay Vault</span>
+        <span class="fx-amount" id="fx-held-amount">$0.00</span>
+        <span class="fx-node-sub">held safely</span>
+      </div>
+      <div class="fx-link"><span class="fx-dot"></span><span class="fx-dot d2"></span></div>
+      <div class="fx-node" id="fx-node-gate">
+        <span class="fx-node-ico">🤖</span>
+        <span class="fx-node-label">AI Gate</span>
+        <span class="fx-node-sub" id="fx-gate-sub">judges the deliverable</span>
+      </div>
+      <div class="fx-link"><span class="fx-dot"></span><span class="fx-dot d2"></span></div>
+      <div class="fx-node" id="fx-node-free">
+        <span class="fx-node-ico">💼</span>
+        <span class="fx-node-label">Freelancer</span>
+        <span class="fx-amount" id="fx-released-amount">$0.00</span>
+        <span class="fx-node-sub">paid on proof</span>
+      </div>
+    </div>
+    <p class="fx-hero-note">Money only crosses the <strong>AI Gate</strong> when the work proves itself.</p>
+  </div>
+
+  <!-- FX: progress stepper -->
+  <ol class="fx-stepper" id="fx-stepper" aria-hidden="true">
+    <li data-step="1"><span class="fx-step-dot">1</span><span class="fx-step-name">Brief</span></li>
+    <li data-step="2"><span class="fx-step-dot">2</span><span class="fx-step-name">Fund</span></li>
+    <li data-step="3"><span class="fx-step-dot">3</span><span class="fx-step-name">Submit</span></li>
+    <li data-step="4"><span class="fx-step-dot">4</span><span class="fx-step-name">Verify</span></li>
+    <li data-step="5"><span class="fx-step-dot">5</span><span class="fx-step-name">Release</span></li>
+  </ol>
+
+  <!-- STEP 1 -->
+  <section class="card">
+    <h2><span class="step-num">1</span> Project setup &amp; AI brief parsing</h2>
+    <p class="hint">Describe the job in plain English. The AI Brief Parser splits it into priced
+      milestones, each with explicit acceptance criteria the deliverable will later be judged against.</p>
+    <div class="grid-3">
+      <div><label for="f-title">Project title</label><input type="text" id="f-title" placeholder="e.g. Sales Data Cleaning &amp; Analysis"></div>
+      <div><label for="f-client">Client name</label><input type="text" id="f-client" placeholder="e.g. Lagos Retail Group"></div>
+      <div><label for="f-email">Freelancer PayPal email (sandbox)</label><input type="email" id="f-email" placeholder="freelancer@example.com"></div>
+    </div>
+    <div style="margin-top:14px">
+      <label for="f-brief">Project brief</label>
+      <textarea id="f-brief" rows="9" placeholder="Milestone 1: Clean the raw sales dataset ($150)&#10;- Remove all duplicate rows..."></textarea>
+    </div>
+    <div class="btn-row">
+      <button class="btn" id="btn-parse">Parse brief with AI</button>
+      <button class="btn ghost" id="btn-demo">Load demo brief</button>
+    </div>
+    <div id="parse-error"></div>
+    <div id="milestone-area" class="hidden">
+      <div id="milestone-cards"></div>
+      <div class="total-row" id="total-row"></div>
+      <p class="small muted">Click a milestone card to work on it in steps 2–5. Amounts are editable.</p>
+    </div>
+  </section>
+
+  <!-- STEP 2 -->
+  <section class="card">
+    <h2><span class="step-num">2</span> Fund the milestone with PayPal</h2>
+    <p class="hint">The client pays the milestone amount through PayPal Sandbox Checkout
+      (server-side order create + capture). Captured funds are held by ProofPay until the
+      AI verdict releases them.</p>
+    <div id="fund-info" class="muted">Parse a brief first, then choose a milestone to fund.</div>
+    <div id="fund-not-configured" class="notice warn hidden">
+      <strong>PayPal Sandbox is not configured.</strong> No payment can be taken yet.
+      Set the <code>PAYPAL_CLIENT_ID</code> and <code>PAYPAL_CLIENT_SECRET</code> environment
+      variables (see README → “Environment setup”) and reload this page. ProofPay never
+      simulates or fakes a payment.
+    </div>
+    <div id="paypal-buttons"></div>
+    <div id="fund-status"></div>
+  </section>
+
+  <!-- STEP 3 -->
+  <section class="card">
+    <h2><span class="step-num">3</span> Freelancer submits the deliverable</h2>
+    <p class="hint">The freelancer describes exactly what was delivered and links the work.
+      Submitting runs the AI Verification Engine against the active milestone's criteria.</p>
+    <label for="d-text">Deliverable summary</label>
+    <textarea id="d-text" rows="5" placeholder="Describe what you delivered, criterion by criterion…"></textarea>
+    <div style="margin-top:12px">
+      <label for="d-link">Link to the work (file, repo, document…)</label>
+      <input type="url" id="d-link" placeholder="https://…">
+    </div>
+    <div class="btn-row">
+      <button class="btn" id="btn-deliver">Submit deliverable &amp; run AI verification</button>
+      <button class="btn ghost" id="btn-sample">Load sample deliverable (demo)</button>
+    </div>
+    <div id="deliver-status"></div>
+  </section>
+
+  <!-- STEP 4 -->
+  <section class="card">
+    <h2><span class="step-num">4</span> AI verification report</h2>
+    <p class="hint">Every criterion is scored on evidence found in the deliverable. Measurable
+      requirements (counts, word counts, file formats) are checked exactly, and failing
+      criteria name what is missing.</p>
+    <div id="verify-empty" class="muted">No verification yet — submit a deliverable in step 3.</div>
+    <div id="verify-report" class="hidden"></div>
+  </section>
+
+  <!-- STEP 5 -->
+  <section class="card">
+    <h2><span class="step-num">5</span> Release the payment</h2>
+    <p class="hint">A passing AI verdict unlocks release: one click sends a real PayPal Payout
+      to the freelancer's PayPal email. If the verdict is REVISE, the client can still override —
+      but the AI's objections stay on the record.</p>
+    <div id="release-info" class="muted">Release becomes available once a milestone is funded and verified.</div>
+    <div class="btn-row">
+      <button class="btn green" id="btn-release" disabled>Release via PayPal Payout</button>
+    </div>
+    <div style="margin-top:8px"><a class="linklike hidden" id="link-override">AI recommends REVISE — override and allow release anyway</a></div>
+    <div id="release-status"></div>
+  </section>
+
+  <!-- LEDGER -->
+  <section class="card">
+    <h2>Money ledger</h2>
+    <p class="hint">Every PayPal money movement, with its PayPal IDs. Powered by AG Grid.</p>
+    <div id="ledger-grid" class="ag-theme-quartz"></div>
+    <div id="ledger-fallback" class="hidden"></div>
+    <p id="ledger-empty" class="muted small">No money movements yet.</p>
+  </section>
+
+  <div style="text-align:center"><button class="btn ghost" id="btn-reset">Reset demo (clear saved state)</button></div>
+</div>
+
+<footer>
+  ProofPay — built for the PayPal AI Hackathon. Runs entirely on the PayPal Sandbox: no real money moves.<br>
+  Funding = PayPal Orders API capture · Release = PayPal Payouts API · Verdict = ProofPay's deterministic AI engines (public/ai.js).
+</footer>
+
+<canvas id="fx-confetti"></canvas>
+<script src="ai.js"></script>
+<script>
+(function () {
+  'use strict';
+  var AI = window.ProofPayAI;
+  var LS_KEY = 'proofpay-state-v1';
+
+  var SAMPLE_DELIVERABLES = [
+    {
+      text: 'I cleaned the raw sales dataset and removed all duplicate rows. ' +
+        'I fixed the inconsistent date formats in the CSV file so every date now uses one consistent format. ' +
+        'I filled missing values in the revenue column and flagged the rows I could not fill, and I documented every change in a change log. ' +
+        'The cleaned dataset is delivered as a CSV file (cleaned_sales.csv).',
+      link: 'https://files.example.com/cleaned_sales.csv'
+    },
+    {
+      text: 'I analysed sales by region and product category and included 4 charts covering regional revenue, category share, monthly trend and top products. ' +
+        'I wrote a summary report of 950 words in PDF format highlighting the top 5 insights from the data. ' +
+        'The report includes recommendations for the sales team based on the findings.',
+      link: 'https://files.example.com/sales-summary-report.pdf'
+    }
+  ];
+
+  /* ------------------------------ state ------------------------------ */
+
+  function freshMilestone(m) {
+    return {
+      id: m.id, title: m.title, amount: m.amount, criteria: m.criteria,
+      status: 'DRAFT', orderId: null, captureId: null,
+      deliverableText: '', deliverableLink: '', verification: null,
+      payoutBatchId: null, payoutStatus: null, overrideUsed: false
+    };
+  }
+  function freshState() {
+    return {
+      project: { title: '', client: '', freelancerEmail: '', brief: '' },
+      milestones: [], active: 0, ledger: []
+    };
+  }
+  function loadState() {
+    try {
+      var s = JSON.parse(localStorage.getItem(LS_KEY));
+      if (s && s.project && Array.isArray(s.milestones)) return s;
+    } catch (e) { /* fall through */ }
+    return freshState();
+  }
+  var state = loadState();
+  var config = { configured: false };
+  var gridApi = null;
+  var paypalRenderedFor = null;
+
+  function save() { try { localStorage.setItem(LS_KEY, JSON.stringify(state)); } catch (e) {} }
+  function $(id) { return document.getElementById(id); }
+  function esc(s) {
+    return String(s === null || s === undefined ? '' : s)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+  function money(n) { return '$' + Number(n || 0).toFixed(2); }
+  function activeMs() { return state.milestones[state.active] || null; }
+  function notice(el, kind, html) {
+    el.innerHTML = html ? '<div class="notice ' + kind + '">' + html + '</div>' : '';
+  }
+
+  /* --------------------------- milestones ---------------------------- */
+
+  function renderMilestones() {
+    var area = $('milestone-area');
+    if (!state.milestones.length) { area.classList.add('hidden'); return; }
+    area.classList.remove('hidden');
+    var html = '';
+    state.milestones.forEach(function (m, i) {
+      var pillClass = m.status === 'RELEASED' ? 'released' : (m.status === 'FUNDED' ? 'funded' : 'draft');
+      var pillText = m.status === 'FUNDED' ? 'Funded — held by ProofPay' : m.status;
+      html += '<div class="milestone-card' + (i === state.active ? ' active' : '') + '" data-idx="' + i + '">';
+      html += '<div class="ms-head"><span class="ms-title">' + (i + 1) + '. ' + esc(m.title) + '</span>' +
+        '<span class="pill ' + pillClass + '">' + esc(pillText) + '</span></div>';
+      html += '<div class="ms-amount-row"><label style="margin:0">Amount (USD)</label>' +
+        '<input type="number" class="ms-amount" data-idx="' + i + '" min="1" step="1" value="' + esc(m.amount) + '"></div>';
+      html += '<ul class="criteria-list">';
+      m.criteria.forEach(function (c) {
+        html += '<li>' + esc(c.text) + (c.critical ? '<span class="crit-badge">measurable</span>' : '') + '</li>';
+      });
+      html += '</ul>';
+      var ids = [];
+      if (m.orderId) ids.push('Order ID: ' + esc(m.orderId));
+      if (m.captureId) ids.push('Capture ID: ' + esc(m.captureId));
+      if (m.payoutBatchId) ids.push('Payout batch ID: ' + esc(m.payoutBatchId) + (m.payoutStatus ? ' (' + esc(m.payoutStatus) + ')' : ''));
+      if (ids.length) html += '<div class="ms-ids">' + ids.join('<br>') + '</div>';
+      html += '</div>';
+    });
+    $('milestone-cards').innerHTML = html;
+    var total = state.milestones.reduce(function (s, m) { return s + (Number(m.amount) || 0); }, 0);
+    $('total-row').textContent = 'Project total: ' + money(total) + ' across ' + state.milestones.length + ' milestone(s)';
+
+    Array.prototype.forEach.call(document.querySelectorAll('.milestone-card'), function (card) {
+      card.addEventListener('click', function (e) {
+        if (e.target.classList.contains('ms-amount')) return;
+        state.active = Number(card.getAttribute('data-idx'));
+        paypalRenderedFor = null;
+        save(); renderAll();
+      });
+    });
+    Array.prototype.forEach.call(document.querySelectorAll('.ms-amount'), function (input) {
+      input.addEventListener('change', function () {
+        var m = state.milestones[Number(input.getAttribute('data-idx'))];
+        var v = Number(input.value);
+        if (m && isFinite(v) && v > 0) { m.amount = v; save(); renderAll(); }
+      });
+      input.addEventListener('click', function (e) { e.stopPropagation(); });
+    });
+  }
+
+  /* ----------------------------- funding ----------------------------- */
+
+  function setFundStatus(kind, html) { notice($('fund-status'), kind, html); }
+
+  function renderFund() {
+    var m = activeMs();
+    var info = $('fund-info');
+    var container = $('paypal-buttons');
+    $('fund-not-configured').classList.toggle('hidden', config.configured);
+
+    if (!m) {
+      info.textContent = 'Parse a brief first, then choose a milestone to fund.';
+      container.innerHTML = ''; paypalRenderedFor = null;
+      return;
+    }
+    if (m.status === 'RELEASED') {
+      info.innerHTML = 'Milestone <strong>' + esc(m.title) + '</strong> (' + money(m.amount) +
+        ') was funded and has been <strong>released</strong>.' +
+        (m.captureId ? '<br><span class="small muted">Capture ID: ' + esc(m.captureId) + '</span>' : '');
+      container.innerHTML = ''; paypalRenderedFor = null;
+      return;
+    }
+    if (m.status === 'FUNDED') {
+      info.innerHTML = 'Milestone <strong>' + esc(m.title) + '</strong> — ' + money(m.amount) +
+        ' captured and <strong>held by ProofPay</strong> until the AI verdict releases it.' +
+        '<br><span class="small muted">Order ID: ' + esc(m.orderId || '—') + ' · Capture ID: ' + esc(m.captureId || '—') + '</span>';
+      container.innerHTML = ''; paypalRenderedFor = null;
+      return;
+    }
+    info.innerHTML = 'Active milestone: <strong>' + esc(m.title) + '</strong> — ' + money(m.amount) +
+      (state.project.client ? ' · Client: ' + esc(state.project.client) : '');
+    if (!config.configured) { container.innerHTML = ''; paypalRenderedFor = null; return; }
+    if (!window.paypal) {
+      setFundStatus('err', 'The PayPal JS SDK could not be loaded (network or ad-blocker). Reload the page to try again.');
+      return;
+    }
+    var key = state.active + ':' + m.amount;
+    if (paypalRenderedFor === key) return;
+    container.innerHTML = '';
+    paypalRenderedFor = key;
+    window.paypal.Buttons({
+      style: { layout: 'vertical', color: 'blue', shape: 'rect', label: 'paypal' },
+      createOrder: function () {
+        setFundStatus('info', 'Creating PayPal order…');
+        return fetch('/api/orders', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ amount: m.amount, milestoneTitle: m.title })
+        }).then(function (res) {
+          return res.json().then(function (data) {
+            if (!res.ok) throw new Error(data.error || 'Order creation failed.');
+            setFundStatus('info', 'Order ' + esc(data.id) + ' created — approve it in the PayPal window to fund this milestone.');
+            return data.id;
+          });
+        }).catch(function (err) {
+          setFundStatus('err', 'Could not create the PayPal order: ' + esc(err.message));
+          throw err;
+        });
+      },
+      onApprove: function (data) {
+        setFundStatus('info', 'Approved — capturing the payment…');
+        return fetch('/api/orders/' + encodeURIComponent(data.orderID) + '/capture', { method: 'POST' })
+          .then(function (res) {
+            return res.json().then(function (d) {
+              if (!res.ok) throw new Error(d.error || 'Capture failed.');
+              m.status = 'FUNDED';
+              m.orderId = d.id;
+              m.captureId = d.captureId;
+              addLedger('FUND', m.title, m.amount, d.captureId || d.id, d.status || 'COMPLETED');
+              save();
+              setFundStatus('ok', '<strong>Funded.</strong> ' + money(m.amount) + ' captured via PayPal and held by ProofPay. Capture ID: ' + esc(d.captureId || d.id));
+              renderAll();
+            });
+          })
+          .catch(function (err) { setFundStatus('err', 'Capture failed: ' + esc(err.message)); });
+      },
+      onError: function (err) {
+        setFundStatus('err', 'PayPal reported an error: ' + esc(err && err.message ? err.message : err));
+      }
+    }).render('#paypal-buttons');
+  }
+
+  /* --------------------------- verification -------------------------- */
+
+  function renderVerify() {
+    var m = activeMs();
+    var empty = $('verify-empty');
+    var report = $('verify-report');
+    if (!m || !m.verification) {
+      empty.classList.remove('hidden');
+      empty.textContent = m
+        ? 'No verification yet for "' + m.title + '" — submit a deliverable in step 3.'
+        : 'No verification yet — submit a deliverable in step 3.';
+      report.classList.add('hidden');
+      report.innerHTML = '';
+      return;
+    }
+    var v = m.verification;
+    empty.classList.add('hidden');
+    report.classList.remove('hidden');
+    var colour = v.score >= 80 ? 'var(--green)' : (v.score >= 50 ? '#d9a400' : 'var(--red)');
+    var html = '<div class="banner ' + v.verdict + '">' +
+      (v.verdict === 'release' ? '✓ RELEASE RECOMMENDED' : '✎ REVISE — payment stays held') + '</div>';
+    html += '<div class="score-wrap"><div class="score-num">' + v.score + '<span class="small muted">/100</span></div>' +
+      '<div class="bar"><div style="width:' + v.score + '%;background:' + colour + '"></div></div>' +
+      '<div class="muted small">' + v.passed + ' of ' + v.total + ' criteria passed</div></div>';
+    html += '<p class="small" style="line-height:1.55">' + esc(v.summary) + '</p>';
+    html += '<table class="verify"><thead><tr><th>Criterion</th><th>Verdict</th><th>Score</th><th>Evidence from the deliverable</th></tr></thead><tbody>';
+    v.results.forEach(function (r) {
+      html += '<tr><td>' + esc(r.criterion) + (r.critical ? '<span class="crit-badge">measurable</span>' : '') + '</td>' +
+        '<td class="' + (r.status === 'pass' ? 'verdict-pass' : 'verdict-fail') + '">' + (r.status === 'pass' ? 'PASS' : 'FAIL') + '</td>' +
+        '<td>' + r.score + '</td>' +
+        '<td>' + (r.evidence ? '<span class="evidence">“' + esc(r.evidence) + '”</span>'
+          : '<span class="evidence">No matching evidence found</span>') +
+        (r.reasons && r.reasons.length ? '<br><span class="small" style="color:var(--red)">' + esc(r.reasons.join('; ')) + '</span>' : '') +
+        '</td></tr>';
+    });
+    html += '</tbody></table>';
+    if (v.missingItems.length) {
+      html += '<p style="margin:14px 0 0"><strong>What the freelancer must fix:</strong></p><ul class="missing">';
+      v.missingItems.forEach(function (item) { html += '<li>' + esc(item) + '</li>'; });
+      html += '</ul>';
+    }
+    report.innerHTML = html;
+  }
+
+  /* ----------------------------- release ----------------------------- */
+
+  function canRelease(m) {
+    return m && m.status === 'FUNDED' && m.verification &&
+      (m.verification.verdict === 'release' || m.overrideUsed);
+  }
+
+  function renderRelease() {
+    var m = activeMs();
+    var info = $('release-info');
+    var btn = $('btn-release');
+    var override = $('link-override');
+    btn.disabled = true;
+    override.classList.add('hidden');
+    if (!m) { info.textContent = 'Release becomes available once a milestone is funded and verified.'; return; }
+    btn.textContent = 'Release ' + money(m.amount) + ' via PayPal Payout';
+    if (m.status === 'RELEASED') {
+      info.innerHTML = '<strong>Released.</strong> ' + money(m.amount) + ' was paid to ' +
+        esc(state.project.freelancerEmail || 'the freelancer') + ' via PayPal Payouts.' +
+        (m.payoutBatchId ? '<br><span class="small muted">Payout batch ID: ' + esc(m.payoutBatchId) + ' · Status: ' + esc(m.payoutStatus || '') + '</span>' : '');
+      return;
+    }
+    if (m.status !== 'FUNDED') {
+      info.textContent = 'This milestone is not funded yet — fund it in step 2 before any release is possible.';
+      return;
+    }
+    if (!m.verification) {
+      info.textContent = 'Funded and held. Submit the deliverable in step 3 so the AI can verify it before release.';
+      return;
+    }
+    if (m.verification.verdict === 'release') {
+      info.innerHTML = 'AI verdict: <strong style="color:var(--green)">RELEASE RECOMMENDED</strong> (score ' +
+        m.verification.score + '/100). The release button is unlocked.';
+      btn.disabled = false;
+      return;
+    }
+    info.innerHTML = 'AI verdict: <strong style="color:var(--amber)">REVISE</strong> (score ' + m.verification.score +
+      '/100). The money stays held while the freelancer fixes the items listed in step 4.';
+    if (!m.overrideUsed) override.classList.remove('hidden');
+    else { info.innerHTML += '<br>Client override recorded — release is unlocked despite the REVISE verdict.'; btn.disabled = false; }
+  }
+
+  /* ----------------------------- ledger ------------------------------ */
+
+  function addLedger(type, milestone, amount, paypalId, status) {
+    state.ledger.push({
+      time: new Date().toISOString(),
+      milestone: milestone, type: type,
+      amount: Number(amount) || 0, paypalId: paypalId || '', status: status || ''
+    });
+  }
+
+  function renderLedger() {
+    var rows = state.ledger.slice().reverse();
+    $('ledger-empty').style.display = rows.length ? 'none' : 'block';
+    var gridEl = $('ledger-grid');
+    var fb = $('ledger-fallback');
+    if (window.agGrid && typeof window.agGrid.createGrid === 'function') {
+      try {
+        gridEl.style.display = 'block';
+        fb.classList.add('hidden');
+        if (!gridApi) {
+          gridApi = window.agGrid.createGrid(gridEl, {
+            columnDefs: [
+              { headerName: 'Time', field: 'time', valueFormatter: function (p) { return p.value ? new Date(p.value).toLocaleString() : ''; } },
+              { headerName: 'Milestone', field: 'milestone' },
+              { headerName: 'Type', field: 'type' },
+              { headerName: 'Amount (USD)', field: 'amount', valueFormatter: function (p) { return money(p.value); } },
+              { headerName: 'PayPal ID', field: 'paypalId' },
+              { headerName: 'Status', field: 'status' }
+            ],
+            rowData: rows,
+            defaultColDef: { flex: 1, resizable: true, sortable: true }
+          });
+        } else {
+          gridApi.setGridOption('rowData', rows);
+        }
+        return;
+      } catch (e) { /* fall through to the plain table */ }
+    }
+    gridEl.style.display = 'none';
+    fb.classList.remove('hidden');
+    if (!rows.length) { fb.innerHTML = ''; return; }
+    var html = '<table class="ledger"><thead><tr><th>Time</th><th>Milestone</th><th>Type</th><th>Amount</th><th>PayPal ID</th><th>Status</th></tr></thead><tbody>';
+    rows.forEach(function (r) {
+      html += '<tr><td>' + esc(new Date(r.time).toLocaleString()) + '</td><td>' + esc(r.milestone) +
+        '</td><td>' + esc(r.type) + '</td><td>' + money(r.amount) + '</td><td>' + esc(r.paypalId) +
+        '</td><td>' + esc(r.status) + '</td></tr>';
+    });
+    fb.innerHTML = html + '</tbody></table>';
+  }
+
+  /* ------------------------------ wiring ----------------------------- */
+
+  function renderAll() { renderMilestones(); renderFund(); renderVerify(); renderRelease(); renderLedger(); }
+
+  function readProjectForm() {
+    state.project = {
+      title: $('f-title').value.trim(),
+      client: $('f-client').value.trim(),
+      freelancerEmail: $('f-email').value.trim(),
+      brief: $('f-brief').value
+    };
+  }
+
+  function doParse() {
+    readProjectForm();
+    if (!state.project.brief.trim()) {
+      notice($('parse-error'), 'err', 'Paste a project brief first — or click “Load demo brief”.');
+      return;
+    }
+    notice($('parse-error'), '', '');
+    var parsed = AI.parseBrief(state.project.brief);
+    state.milestones = parsed.milestones.map(freshMilestone);
+    state.active = 0;
+    paypalRenderedFor = null;
+    save();
+    renderAll();
+    $('milestone-area').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  $('btn-parse').addEventListener('click', doParse);
+
+  $('btn-demo').addEventListener('click', function () {
+    $('f-title').value = 'Sales Data Cleaning & Analysis';
+    $('f-client').value = 'Lagos Retail Group';
+    $('f-email').value = 'sb-dwjgk53749343@personal.example.com';
+    $('f-brief').value = AI.DEMO_BRIEF;
+    doParse();
+  });
+
+  $('btn-sample').addEventListener('click', function () {
+    var sample = SAMPLE_DELIVERABLES[state.active] || {
+      text: 'The work for this milestone is complete and delivered as described in the brief.',
+      link: ''
+    };
+    $('d-text').value = sample.text;
+    $('d-link').value = sample.link;
+    notice($('deliver-status'), 'info', 'Sample deliverable loaded — now submit it to run the AI verification.');
+  });
+
+  $('btn-deliver').addEventListener('click', function () {
+    var m = activeMs();
+    if (!m) { notice($('deliver-status'), 'err', 'Parse a brief and select a milestone first.'); return; }
+    var text = $('d-text').value.trim();
+    var link = $('d-link').value.trim();
+    if (!text && !link) { notice($('deliver-status'), 'err', 'Describe the deliverable (or at least link it) before submitting.'); return; }
+    m.deliverableText = text;
+    m.deliverableLink = link;
+    m.verification = AI.verifyDeliverable(m.criteria, { text: text, link: link });
+    save();
+    notice($('deliver-status'), m.verification.verdict === 'release' ? 'ok' : 'warn',
+      'AI verification complete: score <strong>' + m.verification.score + '/100</strong> — verdict <strong>' +
+      (m.verification.verdict === 'release' ? 'RELEASE RECOMMENDED' : 'REVISE') + '</strong>. See step 4 for the full report.');
+    renderAll();
+    $('verify-report').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+
+  $('link-override').addEventListener('click', function () {
+    var m = activeMs();
+    if (!m) return;
+    if (window.confirm('The AI recommends REVISE for "' + m.title + '". Override the verdict and unlock release of ' + money(m.amount) + ' anyway? The override will be recorded.')) {
+      m.overrideUsed = true;
+      save();
+      renderAll();
+    }
+  });
+
+  $('btn-release').addEventListener('click', function () {
+    var m = activeMs();
+    if (!canRelease(m)) return;
+    if (!state.project.freelancerEmail) {
+      notice($('release-status'), 'err', 'Add the freelancer PayPal email in step 1 first.');
+      return;
+    }
+    var btn = $('btn-release');
+    btn.disabled = true;
+    btn.textContent = 'Sending payout…';
+    notice($('release-status'), 'info', 'Calling the PayPal Payouts API…');
+    fetch('/api/payout', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        amount: m.amount,
+        receiverEmail: state.project.freelancerEmail,
+        milestoneTitle: m.title
+      })
+    }).then(function (res) {
+      return res.json().then(function (d) {
+        if (!res.ok) throw new Error(d.error || 'Payout failed.');
+        m.status = 'RELEASED';
+        m.payoutBatchId = d.payoutBatchId;
+        m.payoutStatus = d.status;
+        addLedger('RELEASE', m.title, m.amount, d.payoutBatchId, d.status);
+        save();
+        notice($('release-status'), 'ok', '<strong>Paid.</strong> ' + money(m.amount) + ' released to ' +
+          esc(state.project.freelancerEmail) + ' via PayPal Payouts. Batch ID: ' + esc(d.payoutBatchId || '—') +
+          ' · Status: ' + esc(d.status || ''));
+        renderAll();
+      });
+    }).catch(function (err) {
+      notice($('release-status'), 'err', 'Payout failed — no money moved. ' + esc(err.message));
+      renderRelease();
+    });
+  });
+
+  $('btn-reset').addEventListener('click', function () {
+    if (window.confirm('Clear the saved ProofPay demo state and start over?')) {
+      try { localStorage.removeItem(LS_KEY); } catch (e) {}
+      window.location.reload();
+    }
+  });
+
+  /* ------------------------------- init ------------------------------ */
+
+  function fillForm() {
+    $('f-title').value = state.project.title || '';
+    $('f-client').value = state.project.client || '';
+    $('f-email').value = state.project.freelancerEmail || '';
+    $('f-brief').value = state.project.brief || '';
+    var m = activeMs();
+    if (m) { $('d-text').value = m.deliverableText || ''; $('d-link').value = m.deliverableLink || ''; }
+  }
+
+  function loadPayPalSdk(clientId) {
+    return new Promise(function (resolve) {
+      if (window.paypal) { resolve(true); return; }
+      var s = document.createElement('script');
+      s.src = 'https://www.paypal.com/sdk/js?client-id=' + encodeURIComponent(clientId) + '&currency=USD&intent=capture';
+      s.onload = function () { resolve(true); };
+      s.onerror = function () { resolve(false); };
+      document.head.appendChild(s);
+    });
+  }
+
+  fillForm();
+  renderAll();
+  fetch('/api/config').then(function (res) { return res.json(); }).then(function (cfg) {
+    config = cfg || { configured: false };
+    if (config.configured && config.clientId) {
+      return loadPayPalSdk(config.clientId).then(function () { renderFund(); });
+    }
+    renderFund();
+  }).catch(function () {
+    config = { configured: false };
+    renderFund();
+  });
+})();
+</script>
+<script src="fx.js"></script>
+</body>
+</html>

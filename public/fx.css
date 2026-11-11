@@ -1,0 +1,288 @@
+/*
+ * ProofPay FX layer — dark premium fintech theme + motion.
+ * Presentation only: loaded AFTER the app's inline styles, it re-skins the
+ * existing markup via the app's own CSS variables and adds the hero flow,
+ * stepper, stamps, scan and confetti styles used by fx.js.
+ * No existing element IDs, hooks or behaviour are changed.
+ */
+
+:root{
+  --navy:#04122e;
+  --blue:#009cde;
+  --blue-dark:#0070ba;
+  --bg:#050f22;
+  --card:rgba(13,32,64,.78);
+  --ink:#eaf2fd;
+  --muted:#96aacd;
+  --line:rgba(120,175,255,.18);
+  --green:#2fbf71;
+  --green-bg:rgba(47,191,113,.13);
+  --amber:#f5b83d;
+  --amber-bg:rgba(245,184,61,.13);
+  --red:#ff6b61;
+  --red-bg:rgba(255,107,97,.12);
+  --cyan:#37c6ff;
+}
+
+/* ---------- backdrop ---------- */
+body{
+  background:
+    radial-gradient(900px 480px at 85% -120px, rgba(0,156,222,.22), transparent 60%),
+    radial-gradient(700px 420px at -10% 30%, rgba(0,48,135,.35), transparent 60%),
+    linear-gradient(160deg,#04122e 0%, #061a3d 45%, #030a1a 100%);
+  background-attachment:fixed;
+  color:var(--ink);
+}
+body::before{
+  content:""; position:fixed; inset:0; pointer-events:none; z-index:0;
+  background:
+    radial-gradient(340px 340px at 12% 78%, rgba(55,198,255,.07), transparent 70%),
+    radial-gradient(420px 420px at 92% 62%, rgba(47,191,113,.05), transparent 70%);
+  animation:fxDrift 16s ease-in-out infinite alternate;
+}
+@keyframes fxDrift{ from{ transform:translateY(0) } to{ transform:translateY(-24px) } }
+.wrap, .site-header, footer{ position:relative; z-index:1; }
+
+/* ---------- header ---------- */
+.site-header{
+  background:linear-gradient(120deg, rgba(3,16,42,.92), rgba(0,48,135,.85) 55%, rgba(0,112,186,.85));
+  border-bottom:1px solid rgba(55,198,255,.35);
+  box-shadow:0 6px 32px rgba(0,156,222,.18);
+  backdrop-filter:blur(6px);
+}
+.logo{
+  background:linear-gradient(145deg,#37c6ff,#0070ba);
+  color:#fff;
+  box-shadow:0 0 22px rgba(55,198,255,.55), 0 2px 8px rgba(0,0,0,.4);
+}
+.brand-name{ text-shadow:0 0 18px rgba(55,198,255,.45); }
+.sandbox-badge{ box-shadow:0 0 14px rgba(255,196,57,.45); }
+
+/* mute toggle (added by this layer's markup) */
+.fx-mute{
+  margin-left:10px; border:1px solid rgba(255,255,255,.35); background:rgba(255,255,255,.08);
+  color:#fff; border-radius:999px; padding:6px 12px; font-size:12.5px; font-weight:700;
+  cursor:pointer; transition:background .15s, box-shadow .15s;
+}
+.fx-mute:hover{ background:rgba(255,255,255,.18); box-shadow:0 0 12px rgba(55,198,255,.35); }
+
+/* ---------- cards / forms ---------- */
+.card{
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:18px;
+  box-shadow:0 10px 34px rgba(0,0,0,.38), inset 0 1px 0 rgba(255,255,255,.05);
+  backdrop-filter:blur(8px);
+}
+.step-num{
+  background:linear-gradient(145deg,#37c6ff,#0070ba);
+  box-shadow:0 0 14px rgba(55,198,255,.5);
+}
+.card h2{ color:#fff; }
+.intro{ color:var(--muted); }
+label{ color:#cfe0f5; }
+input[type=text],input[type=email],input[type=number],input[type=url],textarea{
+  background:rgba(4,18,46,.65); color:var(--ink); border-color:var(--line);
+}
+input:focus,textarea:focus{ outline:2px solid var(--cyan); border-color:var(--cyan); background:rgba(4,18,46,.9); box-shadow:0 0 0 4px rgba(55,198,255,.12); }
+::placeholder{ color:#5f7699; }
+
+.btn{
+  background:linear-gradient(120deg,#009cde,#0070ba);
+  box-shadow:0 4px 18px rgba(0,156,222,.35);
+  transition:transform .12s, box-shadow .15s, background .15s;
+}
+.btn:hover{ background:linear-gradient(120deg,#25adf0,#0082cc); box-shadow:0 6px 24px rgba(0,156,222,.5); transform:translateY(-1px); }
+.btn:active{ transform:translateY(0) scale(.98); }
+.btn:disabled{ background:#33506e; box-shadow:none; }
+.btn.ghost{ background:rgba(55,198,255,.08); color:#bfe3ff; border:1px solid var(--line); box-shadow:none; }
+.btn.ghost:hover{ background:rgba(55,198,255,.16); }
+.btn.green{ background:linear-gradient(120deg,#27ae60,#0a7d4f); box-shadow:0 4px 18px rgba(47,191,113,.35); }
+.btn.green:hover{ background:linear-gradient(120deg,#2fbf71,#0e9960); }
+
+.notice.warn{ border-color:rgba(245,184,61,.5); }
+.notice.ok{ border-color:rgba(47,191,113,.5); }
+.notice.err{ border-color:rgba(255,107,97,.5); }
+.notice.info{ background:rgba(0,156,222,.12); color:#bfe3ff; border-color:rgba(55,198,255,.4); }
+code{ color:#9fdcff; }
+
+/* ---------- milestones ---------- */
+.milestone-card{ background:rgba(6,22,50,.55); border-color:var(--line); transition:border-color .2s, box-shadow .25s, transform .15s; }
+.milestone-card:hover{ border-color:var(--cyan); transform:translateY(-1px); }
+.milestone-card.active{ border-color:var(--cyan); box-shadow:0 0 0 3px rgba(55,198,255,.22), 0 0 26px rgba(55,198,255,.18); }
+.pill.draft{ background:rgba(150,170,205,.16); color:var(--muted); }
+.pill.funded{ background:rgba(0,156,222,.18); color:#7fd4ff; box-shadow:0 0 12px rgba(0,156,222,.35); }
+.pill.released{ background:var(--green-bg); color:var(--green); box-shadow:0 0 12px rgba(47,191,113,.35); }
+.crit-badge{ background:rgba(245,184,61,.18); color:var(--amber); }
+.ms-ids{ color:var(--muted); }
+.total-row{ color:#fff; }
+
+/* ---------- verification ---------- */
+.score-num{ color:#fff; font-size:40px; text-shadow:0 0 26px rgba(55,198,255,.55); }
+.bar{ background:rgba(150,170,205,.18); box-shadow:inset 0 1px 3px rgba(0,0,0,.5); }
+.bar>div{ transition:width .9s cubic-bezier(.22,.9,.3,1); box-shadow:0 0 14px rgba(55,198,255,.35); }
+table.verify th{ color:var(--muted); }
+table.verify td{ border-color:var(--line); }
+.banner.release{ border-color:rgba(47,191,113,.55); box-shadow:0 0 22px rgba(47,191,113,.22); }
+.banner.revise{ border-color:rgba(245,184,61,.55); box-shadow:0 0 22px rgba(245,184,61,.16); }
+a.linklike{ color:var(--cyan); }
+
+/* ---------- ledger ---------- */
+#ledger-grid.ag-theme-quartz{
+  --ag-background-color:rgba(5,17,40,.85);
+  --ag-header-background-color:rgba(0,48,135,.5);
+  --ag-foreground-color:#dbe9fb;
+  --ag-header-foreground-color:#bfe3ff;
+  --ag-border-color:rgba(120,175,255,.18);
+  --ag-row-hover-color:rgba(55,198,255,.08);
+  --ag-odd-row-background-color:rgba(255,255,255,.02);
+  border-radius:12px; overflow:hidden;
+}
+table.ledger td, table.ledger th{ border-color:var(--line); }
+.fx-ledger-flash{ animation:fxLedgerFlash 1.6s ease-out; }
+@keyframes fxLedgerFlash{
+  0%{ box-shadow:0 0 0 3px rgba(55,198,255,.65), 0 0 30px rgba(55,198,255,.35); }
+  100%{ box-shadow:0 10px 34px rgba(0,0,0,.38); }
+}
+.fx-row-new{ animation:fxRowGlow 1.6s ease-out; }
+@keyframes fxRowGlow{ 0%{ background:rgba(55,198,255,.28); } 100%{ background:transparent; } }
+
+/* ================================================================
+   HERO — animated money flow: Client → Vault → AI Gate → Freelancer
+   ================================================================ */
+.fx-hero{
+  border:1px solid var(--line); border-radius:18px; padding:18px 18px 14px; margin-bottom:18px;
+  background:linear-gradient(150deg, rgba(0,48,135,.35), rgba(6,22,50,.75) 60%);
+  box-shadow:0 10px 34px rgba(0,0,0,.38), inset 0 1px 0 rgba(255,255,255,.05);
+}
+.fx-flow{ display:flex; align-items:stretch; gap:6px; }
+.fx-node{
+  flex:0 1 168px; min-width:0; text-align:center; padding:12px 8px 10px; border-radius:14px;
+  border:1px solid var(--line); background:rgba(4,18,46,.6); color:var(--muted);
+  transition:box-shadow .5s, border-color .5s, color .5s, transform .3s;
+}
+.fx-node-ico{ display:block; font-size:27px; line-height:1.15; filter:grayscale(.65); transition:filter .4s, transform .3s; }
+.fx-node-label{ display:block; font-weight:800; font-size:13.5px; color:#dbe9fb; margin-top:3px; }
+.fx-node-sub{ display:block; font-size:11.5px; margin-top:2px; line-height:1.35; }
+.fx-amount{ display:block; font-size:21px; font-weight:800; color:#7fe3ff; text-shadow:0 0 16px rgba(55,198,255,.55); margin-top:4px; }
+.fx-node.lit{ color:#cfe6ff; }
+.fx-node.lit .fx-node-ico{ filter:none; transform:scale(1.08); }
+#fx-node-vault.lit{ border-color:rgba(0,156,222,.75); box-shadow:0 0 26px rgba(0,156,222,.4); }
+#fx-node-gate.lit{ border-color:rgba(47,191,113,.75); box-shadow:0 0 26px rgba(47,191,113,.35); }
+#fx-node-gate.blocked{ border-color:rgba(245,184,61,.7); box-shadow:0 0 22px rgba(245,184,61,.3); }
+#fx-node-free.lit{ border-color:rgba(47,191,113,.8); box-shadow:0 0 28px rgba(47,191,113,.45); }
+#fx-node-client.lit{ border-color:rgba(55,198,255,.6); box-shadow:0 0 20px rgba(55,198,255,.3); }
+.fx-node.pulse{ animation:fxPulse 1s ease-out 2; }
+@keyframes fxPulse{
+  0%{ transform:scale(1); } 35%{ transform:scale(1.045); } 100%{ transform:scale(1); }
+}
+.fx-link{ flex:1 1 30px; position:relative; align-self:center; height:2px; min-width:18px;
+  background:linear-gradient(90deg, rgba(55,198,255,.15), rgba(55,198,255,.55), rgba(55,198,255,.15)); border-radius:2px; }
+.fx-dot{
+  position:absolute; top:50%; left:0; width:9px; height:9px; margin-top:-4.5px; border-radius:50%;
+  background:#7fe3ff; box-shadow:0 0 12px 3px rgba(55,198,255,.65);
+  animation:fxTravel 2.4s linear infinite;
+}
+.fx-link:nth-of-type(4) .fx-dot{ animation-delay:.8s; }
+.fx-link .fx-dot.d2{ animation-delay:1.2s; background:#2fbf71; box-shadow:0 0 12px 3px rgba(47,191,113,.6); }
+@keyframes fxTravel{ 0%{ left:0; opacity:0; } 12%{ opacity:1; } 88%{ opacity:1; } 100%{ left:calc(100% - 9px); opacity:0; } }
+.fx-hero-note{ text-align:center; color:var(--muted); font-size:12.5px; margin:12px 0 2px; }
+.fx-hero-note strong{ color:#7fe3ff; }
+
+/* ================================================================
+   STEPPER — Brief → Fund → Submit → Verify → Release
+   ================================================================ */
+.fx-stepper{
+  list-style:none; display:flex; gap:0; margin:0 0 18px; padding:14px 16px;
+  border:1px solid var(--line); border-radius:18px; background:var(--card);
+  box-shadow:0 10px 34px rgba(0,0,0,.38);
+}
+.fx-stepper li{
+  flex:1; display:flex; align-items:center; gap:9px; color:var(--muted);
+  font-size:13px; font-weight:700; position:relative; min-width:0;
+}
+.fx-stepper li:not(:last-child)::after{
+  content:""; flex:1; height:2px; margin:0 10px; border-radius:2px;
+  background:rgba(150,170,205,.2); transition:background .5s, box-shadow .5s;
+}
+.fx-step-dot{
+  width:27px; height:27px; flex:none; border-radius:50%; display:inline-flex; align-items:center; justify-content:center;
+  font-size:13px; font-weight:800; background:rgba(150,170,205,.16); color:var(--muted);
+  border:1px solid var(--line); transition:all .4s;
+}
+.fx-stepper li.done{ color:#9fe8c0; }
+.fx-stepper li.done .fx-step-dot{ background:linear-gradient(145deg,#2fbf71,#0a7d4f); color:#fff; border-color:transparent; box-shadow:0 0 12px rgba(47,191,113,.45); }
+.fx-stepper li.done:not(:last-child)::after{ background:rgba(47,191,113,.55); box-shadow:0 0 8px rgba(47,191,113,.4); }
+.fx-stepper li.current{ color:#fff; }
+.fx-stepper li.current .fx-step-dot{
+  background:linear-gradient(145deg,#37c6ff,#0070ba); color:#fff; border-color:transparent;
+  box-shadow:0 0 16px rgba(55,198,255,.65); animation:fxStepPulse 1.6s ease-in-out infinite;
+}
+@keyframes fxStepPulse{ 0%,100%{ transform:scale(1); } 50%{ transform:scale(1.13); } }
+.fx-stepper li span.fx-step-name{ white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+
+/* ================================================================
+   VERIFICATION FX — scan reveal, stamps, shake, gap highlight
+   ================================================================ */
+#verify-report{ position:relative; overflow:hidden; border-radius:12px; }
+#verify-report.fx-scanning::before{
+  content:""; position:absolute; left:0; right:0; top:-12%; height:13%; z-index:3; pointer-events:none;
+  background:linear-gradient(180deg, transparent, rgba(55,198,255,.20), rgba(55,198,255,.45), transparent);
+  animation:fxScanline 1s linear forwards;
+}
+@keyframes fxScanline{ from{ top:-14%; } to{ top:106%; } }
+#verify-report table.verify tbody tr{ transition:background .3s; }
+#verify-report table.verify tbody tr.fx-row-hidden{ opacity:0; transform:translateX(-10px); }
+#verify-report table.verify tbody tr.fx-row-in{ animation:fxRowIn .45s cubic-bezier(.2,.8,.3,1) forwards; }
+@keyframes fxRowIn{ from{ opacity:0; transform:translateX(-10px); } to{ opacity:1; transform:translateX(0); } }
+.fx-stamp{
+  display:inline-block; animation:fxStamp .5s cubic-bezier(.2,2.2,.4,1) forwards;
+}
+@keyframes fxStamp{
+  0%{ transform:scale(2.4) rotate(-14deg); opacity:0; }
+  60%{ transform:scale(.92) rotate(2deg); opacity:1; }
+  100%{ transform:scale(1) rotate(0deg); opacity:1; }
+}
+.banner.release.fx-banner-pop{ animation:fxBannerGlow 1.4s ease-out; }
+@keyframes fxBannerGlow{
+  0%{ box-shadow:0 0 0 rgba(47,191,113,0); } 30%{ box-shadow:0 0 44px rgba(47,191,113,.55); } 100%{ box-shadow:0 0 22px rgba(47,191,113,.22); }
+}
+.banner.revise.fx-shake{ animation:fxShake .55s ease-in-out; }
+@keyframes fxShake{
+  0%,100%{ transform:translateX(0); } 15%{ transform:translateX(-8px); } 35%{ transform:translateX(7px); }
+  55%{ transform:translateX(-5px); } 75%{ transform:translateX(3px); }
+}
+ul.missing li.fx-gap{
+  background:rgba(255,107,97,.13); border:1px solid rgba(255,107,97,.4); border-radius:8px;
+  padding:5px 9px; margin-bottom:6px; list-style:none; margin-left:-20px;
+  animation:fxGapPulse 1.5s ease-in-out 2;
+}
+@keyframes fxGapPulse{ 0%,100%{ box-shadow:0 0 0 rgba(255,107,97,0); } 50%{ box-shadow:0 0 16px rgba(255,107,97,.4); } }
+.pill.released.fx-stamped{ animation:fxStamp .55s cubic-bezier(.2,2.2,.4,1); }
+
+/* confetti canvas (fx.js) */
+#fx-confetti{ position:fixed; inset:0; width:100%; height:100%; pointer-events:none; z-index:60; }
+
+/* ---------- responsive ---------- */
+@media (max-width:720px){
+  .fx-node{ flex-basis:0; padding:9px 4px 8px; }
+  .fx-node-sub{ display:none; }
+  .fx-node-ico{ font-size:21px; }
+  .fx-amount{ font-size:15px; }
+  .fx-node-label{ font-size:11px; }
+  .fx-stepper{ padding:12px 10px; overflow-x:auto; }
+  .fx-stepper li{ font-size:11.5px; gap:6px; }
+  .fx-stepper li:not(:last-child)::after{ margin:0 5px; }
+  .fx-step-dot{ width:23px; height:23px; font-size:11.5px; }
+  .score-num{ font-size:32px; }
+}
+
+/* ---------- reduced motion ---------- */
+@media (prefers-reduced-motion: reduce){
+  *, *::before, *::after{
+    animation-duration:.01ms !important; animation-iteration-count:1 !important;
+    transition-duration:.01ms !important; scroll-behavior:auto !important;
+  }
+  .fx-dot{ display:none; }
+  body::before{ animation:none; }
+}
