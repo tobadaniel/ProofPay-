@@ -295,6 +295,81 @@ body{
 .pill.released{ box-shadow:0 0 10px rgba(63,158,99,.25); }
 .milestone-card.active{ box-shadow:0 0 0 3px rgba(61,106,153,.25), 0 0 20px rgba(36,112,172,.14); }
 
+/* ================================================================
+   DEVPOST MATCH — re-skin to the PayPal AI Hackathon identity:
+   deep navy #101354, mint #48FF8B, PayPal cyan #35A6FF, chunky
+   Archivo headings (the banner's grotesque register). Structure,
+   spacing and behaviour are unchanged from the mature theme.
+   ================================================================ */
+:root{
+  --navy:#101354;
+  --blue:#35a6ff;
+  --blue-dark:#1b7fd4;
+  --bg:#0b0d45;
+  --card:#151861;
+  --ink:#f2f4ff;
+  --muted:#a6abde;
+  --line:#2b2f7d;
+  --green:#48ff8b;
+  --green-bg:rgba(72,255,139,.13);
+  --cyan:#35a6ff;
+}
+body{
+  background:
+    radial-gradient(900px 480px at 88% -120px, rgba(53,166,255,.16), transparent 60%),
+    radial-gradient(760px 460px at -10% 108%, rgba(72,255,139,.09), transparent 60%),
+    var(--bg);
+  background-attachment:fixed;
+}
+.site-header{
+  background:linear-gradient(120deg, #101354, #1b1e6e 55%, #14418f);
+  border-bottom:1px solid rgba(72,255,139,.25);
+  box-shadow:0 4px 24px rgba(0,0,0,.4);
+}
+.logo{ background:#48ff8b; color:#101354; box-shadow:0 2px 12px rgba(72,255,139,.45); }
+.brand-name, .card h2, .fx-node-name{
+  font-family:"Archivo","Inter",-apple-system,"Segoe UI",Roboto,sans-serif;
+  font-weight:800; letter-spacing:-0.015em;
+}
+.card{ background:var(--card); box-shadow:0 2px 6px rgba(0,0,0,.35), 0 14px 34px rgba(0,0,0,.28), inset 0 1px 0 rgba(255,255,255,.05); }
+.btn{ background:#48ff8b; color:#101354; box-shadow:0 2px 12px rgba(72,255,139,.3); }
+.btn:hover{ background:#6bffa3; box-shadow:0 4px 16px rgba(72,255,139,.4); }
+.btn:disabled{ background:#23265e; color:#7a7fb8; box-shadow:none; }
+.btn.ghost{ background:transparent; color:#cfd4ff; border:1px solid var(--line); box-shadow:none; }
+.btn.ghost:hover{ background:#1b1e6e; }
+.btn.green{ background:#2bde77; color:#0b0d45; box-shadow:0 2px 12px rgba(72,255,139,.3); }
+.btn.green:hover{ background:#48ff8b; }
+input[type=text],input[type=email],input[type=number],input[type=url],textarea{
+  background:#0d1050; border-color:var(--line); color:var(--ink);
+}
+input:focus,textarea:focus{ border-color:#48ff8b; background:#0d1050; box-shadow:0 0 0 3px rgba(72,255,139,.22); }
+::placeholder{ color:#6e73b8; }
+.milestone-card{ background:#10134e; }
+code{ color:#8fd0ff; }
+.notice.info{ background:rgba(53,166,255,.12); color:#bcd9ff; border-color:rgba(53,166,255,.4); }
+.notice.ok{ border-color:rgba(72,255,139,.5); }
+#ledger-grid.ag-theme-quartz{
+  --ag-background-color:#10134e;
+  --ag-header-background-color:#181c66;
+  --ag-foreground-color:#dde1ff;
+  --ag-header-foreground-color:#a6abde;
+  --ag-border-color:#2b2f7d;
+  --ag-row-hover-color:rgba(72,255,139,.06);
+}
+#fx-node-client.lit{ box-shadow:0 0 18px rgba(53,166,255,.3); }
+#fx-node-vault.lit{ box-shadow:0 0 22px rgba(53,166,255,.42); }
+#fx-node-gate.lit{ box-shadow:0 0 22px rgba(72,255,139,.38); }
+#fx-node-free.lit{ box-shadow:0 0 22px rgba(72,255,139,.42); }
+.fx-amount{ text-shadow:0 0 14px rgba(72,255,139,.3); }
+.fx-dot{ background:#7dffb2; box-shadow:0 0 10px 2px rgba(72,255,139,.5); }
+.fx-link .fx-dot.d2{ background:#7cc4ff; box-shadow:0 0 10px 2px rgba(53,166,255,.45); }
+.fx-stepper li.current .fx-step-dot{ box-shadow:0 0 14px rgba(72,255,139,.5); }
+.bar>div{ background:#48ff8b; box-shadow:0 0 10px rgba(72,255,139,.4); }
+.banner.release{ box-shadow:0 0 20px rgba(72,255,139,.18); }
+.milestone-card.active{ box-shadow:0 0 0 3px rgba(72,255,139,.22), 0 0 20px rgba(72,255,139,.12); }
+.fx-node{ background:#0d1050; }
+.step-num{ background:#48ff8b; color:#101354; }
+
 /* ---------- reduced motion ---------- */
 @media (prefers-reduced-motion: reduce){
   *, *::before, *::after{
