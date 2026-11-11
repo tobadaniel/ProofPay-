@@ -29,8 +29,7 @@
 
   var Sound = (function () {
     var ctx = null;
-    var muted = false;
-    try { muted = localStorage.getItem(MUTE_KEY) === '1'; } catch (e) {}
+    var muted = true;
 
     function ac() {
       if (muted) return null;
@@ -87,6 +86,7 @@
   /* ============================ CONFETTI ============================ */
 
   function confetti() {
+    return; /* retired: mature theme, no confetti */
     if (REDUCED) return;
     var canvas = $('fx-confetti');
     if (!canvas) return;
