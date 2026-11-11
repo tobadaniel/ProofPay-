@@ -704,10 +704,18 @@
   });
 
   $('btn-reset').addEventListener('click', function () {
-    if (window.confirm('Clear the saved ProofPay demo state and start over?')) {
+    var btn = $('btn-reset');
+    if (btn.dataset.armed === '1') {
       try { localStorage.removeItem(LS_KEY); } catch (e) {}
       window.location.reload();
+      return;
     }
+    btn.dataset.armed = '1';
+    btn.textContent = 'Click again to confirm reset';
+    setTimeout(function () {
+      btn.dataset.armed = '';
+      btn.textContent = 'Reset demo (clear saved state)';
+    }, 4000);
   });
 
   /* ------------------------------- init ------------------------------ */
