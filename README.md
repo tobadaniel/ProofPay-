@@ -108,16 +108,16 @@ locally as above.
 **Sandbox buyer test account** (use this to fund a milestone in step 2 —
 sandbox money only, no real funds):
 
-- Email: `sb-dwjgk53749343@personal.example.com`
-- Password: `u8B61m_G`
+- Email: `sb-eiss4753858287@personal.example.com`
+- Password: `,m#Ms|2O`
 
 **Freelancer payout account:** the demo brief pre-fills the “Freelancer PayPal
 email” field with the same sandbox personal account
-(`sb-dwjgk53749343@personal.example.com`) — in this sandbox demo it plays both
+(`sb-eiss4753858287@personal.example.com`) — in this sandbox demo it plays both
 roles: the client who funds at checkout, and the freelancer who receives the
 release. The release in step 5 is a real Sandbox payout to that account,
 visible in the ledger with its payout batch ID. (The ProofPay vault in the
-middle is the sandbox business account `sb-qm2xe53744652@business.example.com`,
+middle is the sandbox business account `sb-3p5ad53787804@business.example.com`,
 which receives the funding capture and sends the payout.)
 
 **Suggested 2-minute walkthrough:**
